@@ -9,6 +9,9 @@ namespace ZenseMe.Lib.Storage
     {
         private static SQLiteConnection SQLiteConnection;
 
+        /// <summary>
+        /// Connect to the database.  If the database does not exist, create a new one
+        /// </summary>
         public void Connect()
         {
             CreateDatabase();
@@ -29,6 +32,11 @@ namespace ZenseMe.Lib.Storage
             }
         }
 
+        /// <summary>
+        /// Verify that the local database directory exists, followed by the database itself
+        /// 
+        /// If not, create it
+        /// </summary>
         public void CreateDatabase()
         {
             if (!Directory.Exists("Data"))
@@ -42,6 +50,9 @@ namespace ZenseMe.Lib.Storage
             }
         }
 
+        /// <summary>
+        /// Create the initial structure for storing song information in the database
+        /// </summary>
         public void CreateStructure()
         {
             if (SQLiteConnection.GetSchema("Tables").Rows.Count == 0)
@@ -50,6 +61,14 @@ namespace ZenseMe.Lib.Storage
             }
         }
 
+        /// <summary>
+        /// Fetch information from the database
+        /// 
+        /// If the fetch fails, continue with initialized dataset
+        /// </summary>
+        /// <param name="sqlQuery">Query to perform</param>
+        /// <param name="parameters">Params to fill in for the query</param>
+        /// <returns>Dataset matching query information, else a blank dataset</returns>
         public DataSet Fetch(string sqlQuery, params SQLiteParameter[] parameters)
         {
             Connect();
@@ -95,7 +114,6 @@ namespace ZenseMe.Lib.Storage
                     using (SQLiteCommand command = new SQLiteCommand())
                     {
                         command.Parameters.AddRange(parameters);
-
                         command.CommandText = sqlQuery;
                         command.Connection = SQLiteConnection;
 

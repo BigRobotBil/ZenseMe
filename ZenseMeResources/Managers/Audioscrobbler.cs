@@ -18,24 +18,32 @@ using System.Security;
 
 namespace ZenseMe.Lib.Managers
 {
+    /// <summary>
+    /// Class to perform connections with Last.fm
+    /// </summary>
     public class Audioscrobbler
     {
-
-
-        /* Begin major changes by mope-life */
-
-
-
         private string token = "";
         private string sessionKey = ConfigurationManager.AppSettings["LastFM_SessionKey"];
 
+        /// <summary>
+        /// Submits a track to Last.fm using its endpoint information
+        /// </summary>
+        /// <param name="artist">Name of artist</param>
+        /// <param name="track">Name of track</param>
+        /// <param name="album">Name of album</param>
+        /// <param name="duration">Song length</param>
+        /// <param name="dateSubmitted">Data/Time to record to server</param>
+        /// <returns></returns>
         public bool SubmitTrack(string artist, string track, string album, int duration, DateTime dateSubmitted)
         {
             try
             {
+                //Configure the date pattern that Last.fm expects
                 DateTimeFormatInfo DateTimeInfo = new DateTimeFormatInfo();
                 DateTimeInfo.ShortDatePattern = @"dd/MM/yyyy HH:mm:ss";
 
+                //Convert time to match timezone
                 TimeSpan MinTimeZone = DateTime.Now - DateTime.UtcNow;
                 long TrackUnixTime = dateSubmitted.Ticks - MinTimeZone.Ticks - DateTime.Parse("01/01/1970 00:00:00", DateTimeInfo).Ticks;
                 TrackUnixTime /= 10000000;
@@ -77,7 +85,10 @@ namespace ZenseMe.Lib.Managers
             }
         }
 
-
+        /// <summary>
+        /// Get authentication token from Last.fm to use in further requests
+        /// </summary>
+        /// <returns>True/False depending on success on reaching Last.fm</returns>
         public bool GetToken()
         {
             Dictionary<string, string> postData = new Dictionary<string, string>
@@ -103,7 +114,7 @@ namespace ZenseMe.Lib.Managers
                 }
             }
 
-            MessageBox.Show("Somehow failed getting token from last.fm.", "ZenseMe");
+            MessageBox.Show("Failed getting token from Last.fm.  API key may be out of date.  Contact the developers.", "ZenseMe");
             return false;
         }
 
@@ -203,12 +214,6 @@ namespace ZenseMe.Lib.Managers
             string err = "Failed authentication: {0}";
             MessageBox.Show(string.Format(err, xReader.ReadElementContentAsString()), "ZenseMe");
         }
-
-
-
-        /* End major changes by mope-life */
-
-
 
         private string CalculateMD5(string input)
         {
